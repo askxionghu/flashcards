@@ -10,16 +10,19 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
-import edu.cmu.hcii.ssui.flashcards.Deck.DeckMutator;
+import edu.cmu.hcii.ssui.flashcards.Card.CardMutator;
+import edu.cmu.hcii.ssui.flashcards.MainActivity;
 import edu.cmu.hcii.ssui.flashcards.R;
 
-public class NewDeckDialog extends DialogFragment {
+public class NewCardDialog extends DialogFragment {
 
-    private DeckMutator mDeckMutator;
+    private CardMutator mCardMutator;
 
-    public static NewDeckDialog newInstance() {
-        NewDeckDialog dialog = new NewDeckDialog();
-
+    public static NewCardDialog newInstance(long deckId) {
+        NewCardDialog dialog = new NewCardDialog();
+        Bundle args = new Bundle();
+        args.putLong(MainActivity.ARG_DECK_ID, deckId);
+        dialog.setArguments(args);
         return dialog;
     }
 
@@ -28,27 +31,28 @@ public class NewDeckDialog extends DialogFragment {
         super.onAttach(activity);
 
         try {
-            mDeckMutator = (DeckMutator) activity;
+            mCardMutator = (CardMutator) activity;
         } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString() + " must implement DeckMutator");
+            throw new ClassCastException(activity.toString() + " must implement CardMutator");
         }
     }
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         final Context ctx = getActivity();
+        final long deckId = getArguments().getLong(MainActivity.ARG_DECK_ID);
         final LayoutInflater inflater = LayoutInflater.from(ctx);
-        final View view = inflater.inflate(R.layout.dialog_new_deck, null);
-        final EditText name = (EditText) view.findViewById(R.id.deck_name);
-        final EditText description = (EditText) view.findViewById(R.id.deck_description);
+        final View view = inflater.inflate(R.layout.dialog_new_card, null);
+        final EditText front = (EditText) view.findViewById(R.id.card_front);
+        final EditText back = (EditText) view.findViewById(R.id.card_back);
 
         return new AlertDialog.Builder(ctx)
-                .setTitle(R.string.new_deck_title)
+                .setTitle(R.string.new_card_title)
                 .setView(view)
-                .setPositiveButton(R.string.new_deck_button, new DialogInterface.OnClickListener() {
+                .setPositiveButton(R.string.new_card_button, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        mDeckMutator.insertDeck(name.getText().toString(), description.getText()
+                        mCardMutator.insertCard(deckId, front.getText().toString(), back.getText()
                                 .toString());
                     }
                 })

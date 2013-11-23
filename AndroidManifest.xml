@@ -23,12 +23,11 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="edu.cmu.hcii.ssui.flashcards.NewDeckActivity"
-            android:label="@string/new_deck_title">
-        </activity>
-        <activity
             android:name="edu.cmu.hcii.ssui.flashcards.ManageCardsListActivity"
             android:label="@string/manage_cards_title">
+        </activity>
+        <activity
+            android:name="edu.cmu.hcii.ssui.flashcards.DeckListActivity">
         </activity>
     </application>
 

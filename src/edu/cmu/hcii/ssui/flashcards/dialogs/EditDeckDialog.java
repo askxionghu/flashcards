@@ -11,15 +11,20 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 import edu.cmu.hcii.ssui.flashcards.Deck.DeckMutator;
+import edu.cmu.hcii.ssui.flashcards.MainActivity;
 import edu.cmu.hcii.ssui.flashcards.R;
 
-public class NewDeckDialog extends DialogFragment {
+public class EditDeckDialog extends DialogFragment {
 
     private DeckMutator mDeckMutator;
 
-    public static NewDeckDialog newInstance() {
-        NewDeckDialog dialog = new NewDeckDialog();
-
+    public static EditDeckDialog newInstance(long deckId, String deckName, String deckDescription) {
+        EditDeckDialog dialog = new EditDeckDialog();
+        Bundle args = new Bundle();
+        args.putLong(MainActivity.ARG_DECK_ID, deckId);
+        args.putString(MainActivity.ARG_DECK_NAME, deckName);
+        args.putString(MainActivity.ARG_DECK_DESCRIPTION, deckDescription);
+        dialog.setArguments(args);
         return dialog;
     }
 
@@ -37,18 +42,26 @@ public class NewDeckDialog extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         final Context ctx = getActivity();
+
+        final long deckId = getArguments().getLong(MainActivity.ARG_DECK_ID);
+        final String oldName = getArguments().getString(MainActivity.ARG_DECK_NAME);
+        final String oldDescription = getArguments().getString(MainActivity.ARG_DECK_DESCRIPTION);
+
         final LayoutInflater inflater = LayoutInflater.from(ctx);
         final View view = inflater.inflate(R.layout.dialog_new_deck, null);
         final EditText name = (EditText) view.findViewById(R.id.deck_name);
         final EditText description = (EditText) view.findViewById(R.id.deck_description);
 
+        name.setText(oldName);
+        description.setText(oldDescription);
+
         return new AlertDialog.Builder(ctx)
-                .setTitle(R.string.new_deck_title)
+                .setTitle(R.string.edit_deck_title)
                 .setView(view)
-                .setPositiveButton(R.string.new_deck_button, new DialogInterface.OnClickListener() {
+                .setPositiveButton(R.string.edit_deck_button, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        mDeckMutator.insertDeck(name.getText().toString(), description.getText()
+                        mDeckMutator.updateDeck(deckId, name.getText().toString(), description.getText()
                                 .toString());
                     }
                 })

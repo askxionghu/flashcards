@@ -40,8 +40,9 @@ public class CardDbHelper extends SQLiteOpenHelper {
     }
 
     public interface Queries {
-        String GET_DECKS = "SELECT ? FROM ?";
-        String[] GET_DECKS_ARGS = { "*", Tables.DECKS };
+        String GET_DECK = "SELECT * FROM " + Tables.DECKS + " WHERE " + DeckTable._ID + "= ?";
+        String GET_ALL_DECKS = "SELECT * FROM " + Tables.DECKS;
+        String GET_CARDS_BY_DECK = "SELECT * FROM " + Tables.CARDS + " WHERE " + CardTable.DECK_ID + "= ?";
     }
 
     /**

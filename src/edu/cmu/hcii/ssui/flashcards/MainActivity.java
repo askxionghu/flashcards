@@ -13,6 +13,15 @@ import edu.cmu.hcii.ssui.flashcards.dialogs.NewDeckDialog;
 
 public class MainActivity extends Activity implements OnClickListener {
 
+    /**
+     * Used to pass the {@link Deck} ID to a different Activity.
+     */
+    public static final String ARG_DECK_ID = "deck_id";
+
+    public static final String ARG_DECK_NAME = "deck_name";
+
+    public static final String ARG_DECK_DESCRIPTION = "deck_description";
+
     private Button mManageCards, mStudy;
 
     @Override

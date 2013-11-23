@@ -1,5 +1,24 @@
 package edu.cmu.hcii.ssui.flashcards;
 
+import android.app.DialogFragment;
+import android.app.ListActivity;
+import android.app.LoaderManager;
+import android.content.ContentValues;
+import android.content.Intent;
+import android.content.Loader;
+import android.database.Cursor;
+import android.os.Bundle;
+import android.view.ActionMode;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemLongClickListener;
+import android.widget.ListView;
+import android.widget.SimpleCursorAdapter;
+import android.widget.TextView;
+
 import com.commonsware.cwac.loaderex.SQLiteCursorLoader;
 
 import edu.cmu.hcii.ssui.flashcards.Deck.DeckMutator;
@@ -7,22 +26,19 @@ import edu.cmu.hcii.ssui.flashcards.db.CardDbHelper;
 import edu.cmu.hcii.ssui.flashcards.db.CardDbHelper.DeckTable;
 import edu.cmu.hcii.ssui.flashcards.db.CardDbHelper.Queries;
 import edu.cmu.hcii.ssui.flashcards.db.CardDbHelper.Tables;
+import edu.cmu.hcii.ssui.flashcards.dialogs.DeleteDeckDialog;
+import edu.cmu.hcii.ssui.flashcards.dialogs.EditDeckDialog;
 import edu.cmu.hcii.ssui.flashcards.dialogs.NewDeckDialog;
-import android.app.DialogFragment;
-import android.app.ListActivity;
-import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.widget.SimpleCursorAdapter;
-import android.app.LoaderManager;
-import android.content.ContentValues;
-import android.content.Loader;
-import android.database.Cursor;
 
 public class ManageCardsListActivity extends ListActivity implements
-        LoaderManager.LoaderCallbacks<Cursor>, DeckMutator {
+        LoaderManager.LoaderCallbacks<Cursor>, DeckMutator, ActionMode.Callback {
+    private static final String TAG = ManageCardsListActivity.class.getSimpleName();
 
     private static final int LOADER_ID = 1;
+
+    private ActionMode.Callback mActionModeCallback;
+    private long mSelectedId;
+    private String mSelectedName, mSelectedDescription;
 
     private LoaderManager.LoaderCallbacks<Cursor> mCallbacks;
     private SimpleCursorAdapter mAdapter;
@@ -31,6 +47,21 @@ public class ManageCardsListActivity extends ListActivity implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        getListView().setOnItemLongClickListener(new OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                mSelectedId = id;
+                mSelectedName = ((TextView) view.findViewById(R.id.label_deck_name)).getText().toString();
+                mSelectedDescription = ((TextView) view.findViewById(R.id.label_deck_description)).getText()
+                        .toString();
+                startActionMode(mActionModeCallback);
+                view.setSelected(true);
+                return true;
+            }
+        });
+
+        mActionModeCallback = this;
 
         String[] dataColumns = { DeckTable.NAME, DeckTable.DESCRIPTION };
         int[] viewIds = { R.id.label_deck_name, R.id.label_deck_description };
@@ -42,6 +73,20 @@ public class ManageCardsListActivity extends ListActivity implements
 
         LoaderManager lm = getLoaderManager();
         lm.initLoader(LOADER_ID, null, mCallbacks);
+    }
+
+    @Override
+    public void onListItemClick(ListView l, View v, int position, long id) {
+        super.onListItemClick(l, v, position, id);
+        String name = ((TextView) v.findViewById(R.id.label_deck_name)).getText().toString();
+        String description = ((TextView) v.findViewById(R.id.label_deck_description)).getText()
+                .toString();
+
+        Intent intent = new Intent(this, DeckListActivity.class);
+        intent.putExtra(MainActivity.ARG_DECK_ID, id);
+        intent.putExtra(MainActivity.ARG_DECK_NAME, name);
+        intent.putExtra(MainActivity.ARG_DECK_DESCRIPTION, description);
+        startActivity(intent);
     }
 
     /* --- ACTION BAR --- */
@@ -72,8 +117,7 @@ public class ManageCardsListActivity extends ListActivity implements
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        mLoader = new SQLiteCursorLoader(this, new CardDbHelper(this), Queries.GET_DECKS,
-                Queries.GET_DECKS_ARGS);
+        mLoader = new SQLiteCursorLoader(this, new CardDbHelper(this), Queries.GET_ALL_DECKS, null);
         return mLoader;
     }
 
@@ -89,7 +133,8 @@ public class ManageCardsListActivity extends ListActivity implements
     }
 
     @Override
-    public void onLoaderReset(Loader<Cursor> arg0) {
+    public void onLoaderReset(Loader<Cursor> loader) {
+        mLoader = (SQLiteCursorLoader) loader;
         mAdapter.swapCursor(null);
     }
 
@@ -102,6 +147,57 @@ public class ManageCardsListActivity extends ListActivity implements
         values.put(DeckTable.DESCRIPTION, description);
 
         mLoader.insert(Tables.DECKS, null, values);
+    }
+
+    @Override
+    public void deleteDeck(long id) {
+        mLoader.delete(Tables.DECKS, DeckTable._ID + " = ?", new String[] { String.valueOf(id) });
+    }
+
+    @Override
+    public void updateDeck(long id, String name, String description) {
+        ContentValues values = new ContentValues();
+        values.put(DeckTable.NAME, name);
+        values.put(DeckTable.DESCRIPTION, description);
+
+        mLoader.update(Tables.DECKS, values, DeckTable._ID + " = ?", new String[] { String.valueOf(id) });
+    }
+
+    /* --- ACTION MODE CALLBACKS --- */
+
+    @Override
+    public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+        DialogFragment dialog;
+        switch(item.getItemId()) {
+        case R.id.action_edit_deck:
+            dialog = EditDeckDialog.newInstance(mSelectedId, mSelectedName, mSelectedDescription);
+            dialog.show(getFragmentManager(), EditDeckDialog.class.getSimpleName());
+            mode.finish();
+            return true;
+        case R.id.action_delete_deck:
+            dialog = DeleteDeckDialog.newInstance(mSelectedId);
+            dialog.show(getFragmentManager(), DeleteDeckDialog.class.getSimpleName());
+            mode.finish();
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+        MenuInflater inflater = mode.getMenuInflater();
+        inflater.inflate(R.menu.deck_context_menu, menu);
+        return true;
+    }
+
+    @Override
+    public void onDestroyActionMode(ActionMode mode) {
+        // Do nothing.
+    }
+
+    @Override
+    public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+        return false;
     }
 
 }

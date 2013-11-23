@@ -3,6 +3,10 @@ package edu.cmu.hcii.ssui.flashcards;
 public class Card {
     private static final String TAG = Card.class.getSimpleName();
 
+    public interface CardMutator {
+        void insertCard(long deckId, String front, String back);
+    }
+
     private final long mId;
     private long mDeckId;
     private String mFront;

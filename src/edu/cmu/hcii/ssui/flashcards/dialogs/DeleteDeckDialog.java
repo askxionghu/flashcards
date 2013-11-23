@@ -7,19 +7,19 @@ import android.app.DialogFragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.widget.EditText;
 import edu.cmu.hcii.ssui.flashcards.Deck.DeckMutator;
+import edu.cmu.hcii.ssui.flashcards.MainActivity;
 import edu.cmu.hcii.ssui.flashcards.R;
 
-public class NewDeckDialog extends DialogFragment {
+public class DeleteDeckDialog extends DialogFragment {
 
     private DeckMutator mDeckMutator;
 
-    public static NewDeckDialog newInstance() {
-        NewDeckDialog dialog = new NewDeckDialog();
-
+    public static DeleteDeckDialog newInstance(long deckId) {
+        DeleteDeckDialog dialog = new DeleteDeckDialog();
+        Bundle args = new Bundle();
+        args.putLong(MainActivity.ARG_DECK_ID, deckId);
+        dialog.setArguments(args);
         return dialog;
     }
 
@@ -37,25 +37,22 @@ public class NewDeckDialog extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         final Context ctx = getActivity();
-        final LayoutInflater inflater = LayoutInflater.from(ctx);
-        final View view = inflater.inflate(R.layout.dialog_new_deck, null);
-        final EditText name = (EditText) view.findViewById(R.id.deck_name);
-        final EditText description = (EditText) view.findViewById(R.id.deck_description);
+        final long deckId = getArguments().getLong(MainActivity.ARG_DECK_ID);
 
         return new AlertDialog.Builder(ctx)
-                .setTitle(R.string.new_deck_title)
-                .setView(view)
-                .setPositiveButton(R.string.new_deck_button, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        mDeckMutator.insertDeck(name.getText().toString(), description.getText()
-                                .toString());
-                    }
-                })
+                .setTitle(R.string.delete_deck_title)
+                .setMessage(R.string.delete_deck_message)
+                .setPositiveButton(R.string.delete_deck_button,
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                mDeckMutator.deleteDeck(deckId);
+                            }
+                        })
                 .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        // TODO: Cancel new deck.
+                        // TODO: Cancel delete deck.
 
                     }
                 }).create();

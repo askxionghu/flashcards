@@ -5,6 +5,8 @@ public class Deck {
 
     public interface DeckMutator {
         void insertDeck(String name, String description);
+        void deleteDeck(long id);
+        void updateDeck(long id, String name, String description);
     }
 
     private long mId;
