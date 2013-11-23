@@ -4,13 +4,13 @@ public class Card {
     private static final String TAG = Card.class.getSimpleName();
 
     private final long mId;
-    private long mGroupId;
+    private long mDeckId;
     private String mFront;
     private String mBack;
 
-    public Card(long id, long groupId, String front, String back) {
+    public Card(long id, long deckId, String front, String back) {
        mId = id;
-       mGroupId = groupId;
+       mDeckId = deckId;
        mFront = front;
        mBack = back;
     }
@@ -19,8 +19,8 @@ public class Card {
         return mId;
     }
 
-    public long getGroupId() {
-        return mGroupId;
+    public long getDeckId() {
+        return mDeckId;
     }
 
     public String getFront() {

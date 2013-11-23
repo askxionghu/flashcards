@@ -8,12 +8,19 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 import edu.cmu.hcii.ssui.flashcards.Card;
-import edu.cmu.hcii.ssui.flashcards.Group;
+import edu.cmu.hcii.ssui.flashcards.Deck;
 import edu.cmu.hcii.ssui.flashcards.db.CardDbHelper.CardTable;
-import edu.cmu.hcii.ssui.flashcards.db.CardDbHelper.GroupTable;
+import edu.cmu.hcii.ssui.flashcards.db.CardDbHelper.DeckTable;
 import edu.cmu.hcii.ssui.flashcards.db.CardDbHelper.Tables;
 
+/**
+ * Database access object providing methods to interact with the cards and
+ * decks stored in persistent storage.
+ *
+ * @author Shannon Lee
+ */
 public class CardDatabase {
     private static final String TAG = CardDatabase.class.getSimpleName();
 
@@ -42,44 +49,73 @@ public class CardDatabase {
         }
     }
 
-    public void insertCard(Card card) {
-        ContentValues values = new ContentValues();
-        values.put(CardTable.GROUP_ID, card.getGroupId());
-        values.put(CardTable.FRONT, card.getFront());
-        values.put(CardTable.BACK, card.getBack());
-
-        mDb.insert(Tables.CARDS, null, values);
+    /**
+     * Inserts a {@link Card} into the database. The information of that card
+     * cannot be {@code null}.
+     *
+     * @param card the {@link Card} to be inserted into the database
+     */
+    public long insertCard(Card card) {
+        return insertCard(card.getDeckId(), card.getFront(), card.getBack());
     }
 
-    public void insertGroup(Group group) {
-        ContentValues values = new ContentValues();
-        values.put(GroupTable.NAME, group.getName());
-        values.put(GroupTable.DESCRIPTION, group.getDescription());
+    public long insertCard(long deckId, String front, String back) {
+        Log.i(TAG, "Adding new Card '" + front + "/" + back + "' to the database.");
 
-        mDb.insert(Tables.GROUPS, null, values);
+        ContentValues values = new ContentValues();
+        values.put(CardTable.DECK_ID, deckId);
+        values.put(CardTable.FRONT, front);
+        values.put(CardTable.BACK, back);
+
+        return mDb.insert(Tables.CARDS, null, values);
     }
 
-    public List<Group> getGroups() {
-        Cursor cursor = mDb.query(true, Tables.GROUPS, null, null, null, null, null, null, null);
+    /**
+     * Inserts a {@link Deck} into the database. The information of that deck
+     * cannot be {@code null}.
+     *
+     * @param deck the {@link Deck} to be inserted into the database
+     */
+    public long insertDeck(Deck deck) {
+        return insertDeck(deck.getName(), deck.getDescription());
+    }
 
-        List<Group> cards = new ArrayList<Group>();
+    public long insertDeck(String name, String description) {
+        Log.i(TAG, "Adding new Deck '" + name + "' to the database.");
 
+        ContentValues values = new ContentValues();
+        values.put(DeckTable.NAME, name);
+        values.put(DeckTable.DESCRIPTION, description);
+
+        return mDb.insert(Tables.DECKS, null, values);
+    }
+
+    public List<Deck> getDecks() {
+        // "SELECT * FROM " + Tables.DECKS
+        Cursor cursor = mDb.query(true, Tables.DECKS, null, null, null, null, null, null, null);
+
+        List<Deck> decks = new ArrayList<Deck>();
+
+        // Iterate through the decks.
         cursor.moveToFirst();
         while (!cursor.isAfterLast()) {
-            Group group = cursorToGroup(cursor);
-            cards.add(group);
+            Deck deck = cursorToDeck(cursor);
+            decks.add(deck);
             cursor.moveToNext();
         }
         cursor.close();
-        return cards;
+        return decks;
     }
 
-    public List<Card> getCardsByGroup(Group group) {
-        Cursor cursor = mDb.query(true, Tables.CARDS, null, CardTable.GROUP_ID + " = ?",
-                new String[] { String.valueOf(group.getId()) }, null, null, null, null);
+    public List<Card> getCardsByDeck(Deck deck) {
+        // "SELECT * FROM " + Tables.CARDS + " WHERE " + CardTable.DECK_ID +
+        // " = " + deck.getId()
+        Cursor cursor = mDb.query(true, Tables.CARDS, null, CardTable.DECK_ID + " = ?",
+                new String[] { String.valueOf(deck.getId()) }, null, null, null, null);
 
         List<Card> cards = new ArrayList<Card>();
 
+        // Iterate through the cards.
         cursor.moveToFirst();
         while (!cursor.isAfterLast()) {
             Card card = cursorToCard(cursor);
@@ -100,28 +136,28 @@ public class CardDatabase {
         deleteCard(id);
     }
 
-    public void deleteGroup(long id) {
-        mDb.delete(Tables.GROUPS, GroupTable._ID + " = ?", new String[] { String.valueOf(id) });
+    public void deleteDeck(long id) {
+        mDb.delete(Tables.DECKS, DeckTable._ID + " = ?", new String[] { String.valueOf(id) });
     }
 
-    public void deleteGroup(Group group) {
-        long id = group.getId();
+    public void deleteDeck(Deck deck) {
+        long id = deck.getId();
         deleteCard(id);
     }
 
     private Card cursorToCard(Cursor cursor) {
         long id = cursor.getLong(0);
-        long groupId = cursor.getLong(1);
+        long deckId = cursor.getLong(1);
         String front = cursor.getString(2);
         String back = cursor.getString(3);
-        return new Card(id, groupId, front, back);
+        return new Card(id, deckId, front, back);
     }
 
-    private Group cursorToGroup(Cursor cursor) {
+    private Deck cursorToDeck(Cursor cursor) {
         long id = cursor.getLong(0);
         String name = cursor.getString(1);
         String description = cursor.getString(2);
-        return new Group(id, name, description);
+        return new Deck(id, name, description);
     }
 
 }

@@ -4,6 +4,9 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.provider.BaseColumns;
+import android.util.Log;
+import edu.cmu.hcii.ssui.flashcards.Card;
+import edu.cmu.hcii.ssui.flashcards.Deck;
 
 public class CardDbHelper extends SQLiteOpenHelper {
     private static final String TAG = CardDbHelper.class.getSimpleName();
@@ -14,26 +17,31 @@ public class CardDbHelper extends SQLiteOpenHelper {
     /**
      * SQLite table names.
      */
-    interface Tables {
+    public interface Tables {
         String CARDS = "cards";
-        String GROUPS = "groups";
+        String DECKS = "decks";
     }
 
     /**
-     * Card table columns.
+     * {@link Card} table columns.
      */
     public interface CardTable extends BaseColumns {
-        String GROUP_ID = "group_id";
+        String DECK_ID = "deck_id";
         String FRONT = "front";
         String BACK = "back";
     }
 
     /**
-     * Group table columns.
+     * {@link Deck} table columns.
      */
-    public interface GroupTable extends BaseColumns {
+    public interface DeckTable extends BaseColumns {
         String NAME = "name";
         String DESCRIPTION = "description";
+    }
+
+    public interface Queries {
+        String GET_DECKS = "SELECT ? FROM ?";
+        String[] GET_DECKS_ARGS = { "*", Tables.DECKS };
     }
 
     /**
@@ -41,23 +49,23 @@ public class CardDbHelper extends SQLiteOpenHelper {
      * */
     //@formatter:off
     private interface References {
-        String GROUP_ID = "REFERENCES " + Tables.GROUPS + "(" + GroupTable._ID + ") ON DELETE CASCADE";
+        String DECK_ID = "REFERENCES " + Tables.DECKS + "(" + DeckTable._ID + ") ON DELETE CASCADE";
     }
     //@formatter:on
 
     //@formatter:off
     private static final String CARD_TABLE_CREATE = "CREATE TABLE " + Tables.CARDS + " ("
             + CardTable._ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
-            + CardTable.GROUP_ID + " INTEGER NOT NULL " + References.GROUP_ID + ", "
+            + CardTable.DECK_ID + " INTEGER NOT NULL " + References.DECK_ID + ", "
             + CardTable.FRONT + " TEXT, "
             + CardTable.BACK + " TEXT);";
     //@formatter:on
 
     //@formatter:off
-    private static final String GROUP_TABLE_CREATE = "CREATE TABLE " + Tables.GROUPS + " ("
-            + GroupTable._ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
-            + GroupTable.NAME + " TEXT, "
-            + GroupTable.DESCRIPTION + " TEXT);";
+    private static final String DECK_TABLE_CREATE = "CREATE TABLE " + Tables.DECKS + " ("
+            + DeckTable._ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
+            + DeckTable.NAME + " TEXT, "
+            + DeckTable.DESCRIPTION + " TEXT);";
     //@formatter:on
 
     public CardDbHelper(Context context) {
@@ -67,16 +75,18 @@ public class CardDbHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(CARD_TABLE_CREATE);
-        db.execSQL(GROUP_TABLE_CREATE);
+        db.execSQL(DECK_TABLE_CREATE);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        // Drop older tables if existed
-        db.execSQL("DROP TABLE IF EXISTS " + Tables.CARDS + ";");
-        db.execSQL("DROP TABLE IF EXISTS " + Tables.GROUPS + ";");
+        Log.w(TAG, "Upgrading database from "+ oldVersion + " to " + newVersion + ".");
 
-        // Create tables again
+        // Drop older tables if exists.
+        db.execSQL("DROP TABLE IF EXISTS " + Tables.CARDS + ";");
+        db.execSQL("DROP TABLE IF EXISTS " + Tables.DECKS + ";");
+
+        // Create tables again.
         onCreate(db);
     }
 

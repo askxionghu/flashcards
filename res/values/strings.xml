@@ -3,6 +3,16 @@
 
     <string name="app_name">Flashcards</string>
     <string name="action_settings">Settings</string>
-    <string name="hello_world">Hello world!</string>
+    <string name="action_new_deck">New Deck</string>
+    
+    <string name="manage_cards_title">Pick a Deck</string>
+    
+    <string name="new_deck_title">New Deck</string>
+    <string name="new_deck_button">Create</string>
+    <string name="deck_name">Name</string>
+    <string name="deck_description">Description</string>
+    
+    <string name="manage_cards">Pick a Deck</string>
+    <string name="study">Study</string>
 
 </resources>
