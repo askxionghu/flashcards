@@ -22,6 +22,12 @@ public class MainActivity extends Activity implements OnClickListener {
 
     public static final String ARG_DECK_DESCRIPTION = "deck_description";
 
+    public static final String ARG_CARD_ID = "card_id";
+
+    public static final String ARG_CARD_FRONT = "card_front";
+
+    public static final String ARG_CARD_BACK = "card_back";
+
     private Button mManageCards, mStudy;
 
     @Override
@@ -60,13 +66,15 @@ public class MainActivity extends Activity implements OnClickListener {
 
     @Override
     public void onClick(View v) {
+        Intent intent;
         switch(v.getId()) {
         case R.id.manage_cards:
-            Intent intent = new Intent(this, ManageCardsListActivity.class);
+            intent = new Intent(this, DeckListActivity.class);
             startActivity(intent);
             break;
         case R.id.study:
-            // TODO: Navigate to Study activity
+            intent = new Intent(this, StudyListActivity.class);
+            startActivity(intent);
             break;
         }
     }

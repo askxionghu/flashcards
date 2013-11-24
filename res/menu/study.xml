@@ -2,6 +2,10 @@
     xmlns:flashcards="http://schemas.android.com/apk/res-auto" >
 
     <item
+        android:id="@+id/action_end_session"
+        android:showAsAction="ifRoom"
+        android:title="@string/action_end_session"/>
+    <item
         android:id="@+id/action_settings"
         android:orderInCategory="100"
         android:showAsAction="never"

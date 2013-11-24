@@ -14,7 +14,8 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:inputType="textCapWords"
-        android:hint="@string/deck_name" />
+        android:hint="@string/deck_name"
+        android:focusableInTouchMode="true" />
 
     <EditText
         android:id="@+id/deck_description"
@@ -22,6 +23,6 @@
         android:layout_height="wrap_content"
         android:ems="10"
         android:hint="@string/deck_description"
-        android:inputType="textMultiLine" />
+        android:inputType="textMultiLine|textCapSentences" />
 
 </LinearLayout>

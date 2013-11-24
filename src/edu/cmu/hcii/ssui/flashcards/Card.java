@@ -5,6 +5,8 @@ public class Card {
 
     public interface CardMutator {
         void insertCard(long deckId, String front, String back);
+        void deleteCard(long id);
+        void updateCard(long id, String front, String back);
     }
 
     private final long mId;

@@ -23,11 +23,31 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="edu.cmu.hcii.ssui.flashcards.ManageCardsListActivity"
-            android:label="@string/manage_cards_title">
+            android:name="edu.cmu.hcii.ssui.flashcards.DeckListActivity"
+            android:label="@string/manage_cards_title"
+            android:parentActivityName="edu.cmu.hcii.ssui.flashcards.MainActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="edu.cmu.hcii.ssui.flashcards.MainActivity" />
         </activity>
         <activity
-            android:name="edu.cmu.hcii.ssui.flashcards.DeckListActivity">
+            android:name="edu.cmu.hcii.ssui.flashcards.CardListActivity"
+            android:parentActivityName="edu.cmu.hcii.ssui.flashcards.DeckListActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="edu.cmu.hcii.ssui.flashcards.DeckListActivity" />
+        </activity>
+        <activity
+            android:name="edu.cmu.hcii.ssui.flashcards.StudyListActivity"
+            android:label="@string/study_session_title"
+            android:parentActivityName="edu.cmu.hcii.ssui.flashcards.MainActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="edu.cmu.hcii.ssui.flashcards.MainActivity" />
+        </activity>
+        <activity
+            android:name="edu.cmu.hcii.ssui.flashcards.StudyActivity"
+            android:label="@string/study_session_title" >
         </activity>
     </application>
 
