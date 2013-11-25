@@ -5,6 +5,7 @@ import android.app.DialogFragment;
 import android.app.ListActivity;
 import android.app.LoaderManager;
 import android.content.ContentValues;
+import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
 import android.os.Build;
@@ -107,8 +108,8 @@ public class CardListActivity extends ListActivity implements
                 .toString();
         mSelectedBack = ((TextView) view.findViewById(R.id.label_card_back)).getText()
                 .toString();
-        startActionMode(mActionModeCallback);
-        view.setSelected(true);
+        DialogFragment dialog = EditCardDialog.newInstance(mSelectedId, mSelectedFront, mSelectedBack);
+        dialog.show(getFragmentManager(), EditDeckDialog.class.getSimpleName());
     }
 
     private void setActionBarTitle(CharSequence title, CharSequence subtitle) {
@@ -251,6 +252,7 @@ public class CardListActivity extends ListActivity implements
     public boolean onCreateActionMode(ActionMode mode, Menu menu) {
         MenuInflater inflater = mode.getMenuInflater();
         inflater.inflate(R.menu.item_context_menu, menu);
+        mode.setTitle(R.string.card_selected);
         return true;
     }
 

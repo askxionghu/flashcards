@@ -197,6 +197,7 @@ public class DeckListActivity extends ListActivity implements
     public boolean onCreateActionMode(ActionMode mode, Menu menu) {
         MenuInflater inflater = mode.getMenuInflater();
         inflater.inflate(R.menu.item_context_menu, menu);
+        mode.setTitle(R.string.deck_selected);
         return true;
     }
 

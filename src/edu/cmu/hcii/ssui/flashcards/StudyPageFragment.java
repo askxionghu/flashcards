@@ -11,10 +11,6 @@ import android.widget.Button;
 public class StudyPageFragment extends Fragment {
     private static final String TAG = StudyPageFragment.class.getSimpleName();
 
-    private static final String ARG_CARD = "card";
-
-    private Card mCard;
-
     private Button mCardFront;
 
     private Button mCardBack;
@@ -42,8 +38,6 @@ public class StudyPageFragment extends Fragment {
 
         mFront = getArguments().getString(MainActivity.ARG_CARD_FRONT);
         mBack = getArguments().getString(MainActivity.ARG_CARD_BACK);
-
-        Log.i(TAG, "Front: " + mFront + "; Back: " + mBack);
     }
 
     @Override
@@ -51,21 +45,7 @@ public class StudyPageFragment extends Fragment {
         super.onCreateView(inflater, container, savedInstanceState);
         View view = inflater.inflate(R.layout.study_page, container, false);
 
-        mCardFront = (Button) view.findViewById(R.id.card_front);
-        mCardBack = (Button) view.findViewById(R.id.card_back);
-
-        mCardFront.setText(mFront);
-        mCardBack.setText(mBack);
-
         return view;
-    }
-
-    public Button getCardFront() {
-        return mCardFront;
-    }
-
-    public Button getCardBack() {
-        return mCardBack;
     }
 
 }

@@ -8,6 +8,10 @@
     <string name="action_edit">Edit</string>
     <string name="action_delete">Delete</string>
     <string name="action_end_session">End Session</string>
+    <string name="action_next">Next</string>
+    
+    <string name="card_selected">Card Selected</string>
+    <string name="deck_selected">Deck Selected</string>
     
     <string name="manage_cards_title">Pick a Deck</string>
     
@@ -44,6 +48,14 @@
     
     <string name="study_session_title">Study Mode</string>
     <string name="study_session_subtitle">Pick a Deck</string>
+    
+    <string name="instruction_card_title">Instructions:</string>
+    <string name="instruction_card">Instructions: Touch this card to turn it around.</string>
+    <string name="instruction_card_back">Swipe right to get to the next card.</string>
+    
+    <string name="memorized">Memorized?</string>
+    <string name="memorized_yes">✓</string>
+    <string name="memorized_no">×</string>
     
     <string name="dummy_front">Front</string>
     <string name="dummy_back">Back</string>
