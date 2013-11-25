@@ -17,9 +17,9 @@ import android.widget.TextView;
 
 import com.commonsware.cwac.loaderex.SQLiteCursorLoader;
 
+import edu.cmu.hcii.ssui.flashcards.db.CardContract.DeckTable;
+import edu.cmu.hcii.ssui.flashcards.db.CardContract.Queries;
 import edu.cmu.hcii.ssui.flashcards.db.CardDbHelper;
-import edu.cmu.hcii.ssui.flashcards.db.CardDbHelper.DeckTable;
-import edu.cmu.hcii.ssui.flashcards.db.CardDbHelper.Queries;
 
 public class StudyListActivity extends ListActivity implements LoaderManager.LoaderCallbacks<Cursor> {
     private static final String TAG = StudyListActivity.class.getSimpleName();
@@ -56,6 +56,8 @@ public class StudyListActivity extends ListActivity implements LoaderManager.Loa
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
         super.onListItemClick(l, v, position, id);
+        v.setEnabled(false);
+
         String name = ((TextView) v.findViewById(R.id.label_deck_name)).getText().toString();
         String description = ((TextView) v.findViewById(R.id.label_deck_description)).getText()
                 .toString();
@@ -79,7 +81,7 @@ public class StudyListActivity extends ListActivity implements LoaderManager.Loa
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        mLoader = new SQLiteCursorLoader(this, new CardDbHelper(this), Queries.GET_ALL_DECKS, null);
+        mLoader = new SQLiteCursorLoader(this, CardDbHelper.getInstance(this), Queries.GET_ALL_DECKS, null);
         return mLoader;
     }
 

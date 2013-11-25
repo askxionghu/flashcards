@@ -11,7 +11,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 import edu.cmu.hcii.ssui.flashcards.Card.CardMutator;
-import edu.cmu.hcii.ssui.flashcards.Deck.DeckMutator;
 import edu.cmu.hcii.ssui.flashcards.MainActivity;
 import edu.cmu.hcii.ssui.flashcards.R;
 

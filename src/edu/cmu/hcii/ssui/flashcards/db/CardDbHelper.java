@@ -7,43 +7,15 @@ import android.provider.BaseColumns;
 import android.util.Log;
 import edu.cmu.hcii.ssui.flashcards.Card;
 import edu.cmu.hcii.ssui.flashcards.Deck;
+import edu.cmu.hcii.ssui.flashcards.db.CardContract.CardTable;
+import edu.cmu.hcii.ssui.flashcards.db.CardContract.DeckTable;
+import edu.cmu.hcii.ssui.flashcards.db.CardContract.Tables;
 
 public class CardDbHelper extends SQLiteOpenHelper {
     private static final String TAG = CardDbHelper.class.getSimpleName();
 
     private static final String DATABASE_NAME = "flashcards.db";
     private static final int DATABASE_VERSION = 1;
-
-    /**
-     * SQLite table names.
-     */
-    public interface Tables {
-        String CARDS = "cards";
-        String DECKS = "decks";
-    }
-
-    /**
-     * {@link Card} table columns.
-     */
-    public interface CardTable extends BaseColumns {
-        String DECK_ID = "deck_id";
-        String FRONT = "front";
-        String BACK = "back";
-    }
-
-    /**
-     * {@link Deck} table columns.
-     */
-    public interface DeckTable extends BaseColumns {
-        String NAME = "name";
-        String DESCRIPTION = "description";
-    }
-
-    public interface Queries {
-        String GET_DECK = "SELECT * FROM " + Tables.DECKS + " WHERE " + DeckTable._ID + "= ?";
-        String GET_ALL_DECKS = "SELECT * FROM " + Tables.DECKS;
-        String GET_CARDS_BY_DECK = "SELECT * FROM " + Tables.CARDS + " WHERE " + CardTable.DECK_ID + "= ?";
-    }
 
     /**
      * {@code REFERENCES} clauses.
@@ -69,8 +41,17 @@ public class CardDbHelper extends SQLiteOpenHelper {
             + DeckTable.DESCRIPTION + " TEXT);";
     //@formatter:on
 
-    public CardDbHelper(Context context) {
+    private CardDbHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
+    }
+
+    private static CardDbHelper sInstance;
+
+    public static CardDbHelper getInstance(Context context) {
+        if (sInstance == null) {
+            sInstance = new CardDbHelper(context.getApplicationContext());
+        }
+        return sInstance;
     }
 
     @Override

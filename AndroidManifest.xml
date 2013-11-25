@@ -47,7 +47,11 @@
         </activity>
         <activity
             android:name="edu.cmu.hcii.ssui.flashcards.StudyActivity"
-            android:label="@string/study_session_title" >
+            android:label="@string/study_session_title"
+            android:parentActivityName="edu.cmu.hcii.ssui.flashcards.StudyListActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="edu.cmu.hcii.ssui.flashcards.StudyListActivity" />
         </activity>
     </application>
 

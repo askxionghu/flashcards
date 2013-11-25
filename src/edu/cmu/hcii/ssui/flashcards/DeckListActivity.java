@@ -24,10 +24,10 @@ import android.widget.TextView;
 import com.commonsware.cwac.loaderex.SQLiteCursorLoader;
 
 import edu.cmu.hcii.ssui.flashcards.Deck.DeckMutator;
+import edu.cmu.hcii.ssui.flashcards.db.CardContract.DeckTable;
+import edu.cmu.hcii.ssui.flashcards.db.CardContract.Queries;
+import edu.cmu.hcii.ssui.flashcards.db.CardContract.Tables;
 import edu.cmu.hcii.ssui.flashcards.db.CardDbHelper;
-import edu.cmu.hcii.ssui.flashcards.db.CardDbHelper.DeckTable;
-import edu.cmu.hcii.ssui.flashcards.db.CardDbHelper.Queries;
-import edu.cmu.hcii.ssui.flashcards.db.CardDbHelper.Tables;
 import edu.cmu.hcii.ssui.flashcards.dialogs.DeleteDeckDialog;
 import edu.cmu.hcii.ssui.flashcards.dialogs.EditDeckDialog;
 import edu.cmu.hcii.ssui.flashcards.dialogs.NewDeckDialog;
@@ -64,6 +64,7 @@ public class DeckListActivity extends ListActivity implements
                         .toString();
                 startActionMode(mActionModeCallback);
                 view.setSelected(true);
+                parent.setSelection(position);
                 return true;
             }
         });
@@ -124,7 +125,7 @@ public class DeckListActivity extends ListActivity implements
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        mLoader = new SQLiteCursorLoader(this, new CardDbHelper(this), Queries.GET_ALL_DECKS, null);
+        mLoader = new SQLiteCursorLoader(this, CardDbHelper.getInstance(this), Queries.GET_ALL_DECKS, null);
         return mLoader;
     }
 
@@ -153,7 +154,9 @@ public class DeckListActivity extends ListActivity implements
         values.put(DeckTable.NAME, name);
         values.put(DeckTable.DESCRIPTION, description);
 
-        mLoader.insert(Tables.DECKS, null, values);
+        if (!name.isEmpty()) {
+            mLoader.insert(Tables.DECKS, null, values);
+        }
     }
 
     @Override

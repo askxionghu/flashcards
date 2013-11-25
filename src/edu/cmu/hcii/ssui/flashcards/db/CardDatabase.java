@@ -11,9 +11,9 @@ import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 import edu.cmu.hcii.ssui.flashcards.Card;
 import edu.cmu.hcii.ssui.flashcards.Deck;
-import edu.cmu.hcii.ssui.flashcards.db.CardDbHelper.CardTable;
-import edu.cmu.hcii.ssui.flashcards.db.CardDbHelper.DeckTable;
-import edu.cmu.hcii.ssui.flashcards.db.CardDbHelper.Tables;
+import edu.cmu.hcii.ssui.flashcards.db.CardContract.CardTable;
+import edu.cmu.hcii.ssui.flashcards.db.CardContract.DeckTable;
+import edu.cmu.hcii.ssui.flashcards.db.CardContract.Tables;
 
 /**
  * Database access object providing methods to interact with the cards and
@@ -28,7 +28,7 @@ public class CardDatabase {
     private SQLiteDatabase mDb;
 
     public CardDatabase(Context context) {
-        mDbHelper = new CardDbHelper(context);
+        mDbHelper = CardDbHelper.getInstance(context);
     }
 
     /**

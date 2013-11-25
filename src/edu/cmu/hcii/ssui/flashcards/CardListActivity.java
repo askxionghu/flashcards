@@ -1,39 +1,36 @@
 package edu.cmu.hcii.ssui.flashcards;
 
-import com.commonsware.cwac.loaderex.SQLiteCursorLoader;
-
-import edu.cmu.hcii.ssui.flashcards.Card.CardMutator;
-import edu.cmu.hcii.ssui.flashcards.db.CardDbHelper;
-import edu.cmu.hcii.ssui.flashcards.db.CardDbHelper.CardTable;
-import edu.cmu.hcii.ssui.flashcards.db.CardDbHelper.DeckTable;
-import edu.cmu.hcii.ssui.flashcards.db.CardDbHelper.Queries;
-import edu.cmu.hcii.ssui.flashcards.db.CardDbHelper.Tables;
-import edu.cmu.hcii.ssui.flashcards.dialogs.DeleteCardDialog;
-import edu.cmu.hcii.ssui.flashcards.dialogs.DeleteDeckDialog;
-import edu.cmu.hcii.ssui.flashcards.dialogs.EditCardDialog;
-import edu.cmu.hcii.ssui.flashcards.dialogs.EditDeckDialog;
-import edu.cmu.hcii.ssui.flashcards.dialogs.NewCardDialog;
-import edu.cmu.hcii.ssui.flashcards.dialogs.NewDeckDialog;
 import android.app.ActionBar;
 import android.app.DialogFragment;
 import android.app.ListActivity;
+import android.app.LoaderManager;
+import android.content.ContentValues;
+import android.content.Loader;
+import android.database.Cursor;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.Button;
+import android.widget.AdapterView.OnItemLongClickListener;
+import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
-import android.widget.AdapterView.OnItemLongClickListener;
-import android.app.LoaderManager;
-import android.content.ContentValues;
-import android.content.Loader;
-import android.database.Cursor;
+
+import com.commonsware.cwac.loaderex.SQLiteCursorLoader;
+
+import edu.cmu.hcii.ssui.flashcards.Card.CardMutator;
+import edu.cmu.hcii.ssui.flashcards.db.CardContract.CardTable;
+import edu.cmu.hcii.ssui.flashcards.db.CardContract.Queries;
+import edu.cmu.hcii.ssui.flashcards.db.CardContract.Tables;
+import edu.cmu.hcii.ssui.flashcards.db.CardDbHelper;
+import edu.cmu.hcii.ssui.flashcards.dialogs.DeleteCardDialog;
+import edu.cmu.hcii.ssui.flashcards.dialogs.EditCardDialog;
+import edu.cmu.hcii.ssui.flashcards.dialogs.EditDeckDialog;
+import edu.cmu.hcii.ssui.flashcards.dialogs.NewCardDialog;
 
 public class CardListActivity extends ListActivity implements
         LoaderManager.LoaderCallbacks<Cursor>, CardMutator, ActionMode.Callback {
@@ -102,11 +99,25 @@ public class CardListActivity extends ListActivity implements
         lm.initLoader(DECK_LOADER_ID, bundle, mCallbacks);
     }
 
+    @Override
+    public void onListItemClick(ListView l, View view, int position, long id) {
+        super.onListItemClick(l, view, position, id);
+        mSelectedId = id;
+        mSelectedFront = ((TextView) view.findViewById(R.id.label_card_front)).getText()
+                .toString();
+        mSelectedBack = ((TextView) view.findViewById(R.id.label_card_back)).getText()
+                .toString();
+        startActionMode(mActionModeCallback);
+        view.setSelected(true);
+    }
+
     private void setActionBarTitle(CharSequence title, CharSequence subtitle) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             ActionBar bar = getActionBar();
             bar.setTitle(title);
-            bar.setSubtitle(subtitle);
+            if (subtitle.length() > 0) {
+                bar.setSubtitle(subtitle);
+            }
         }
     }
 
@@ -140,11 +151,11 @@ public class CardListActivity extends ListActivity implements
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         switch (id) {
         case CARDS_LOADER_ID:
-            mCardsLoader = new SQLiteCursorLoader(this, new CardDbHelper(this),
+            mCardsLoader = new SQLiteCursorLoader(this, CardDbHelper.getInstance(this),
                     Queries.GET_CARDS_BY_DECK, new String[] { String.valueOf(mDeckId) });
             return mCardsLoader;
         case DECK_LOADER_ID:
-            mDeckLoader = new SQLiteCursorLoader(this, new CardDbHelper(this), Queries.GET_DECK,
+            mDeckLoader = new SQLiteCursorLoader(this, CardDbHelper.getInstance(this), Queries.GET_DECK,
                     new String[] { String.valueOf(mDeckId) });
             return mDeckLoader;
         }

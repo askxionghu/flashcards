@@ -44,5 +44,8 @@
     
     <string name="study_session_title">Study Mode</string>
     <string name="study_session_subtitle">Pick a Deck</string>
+    
+    <string name="dummy_front">Front</string>
+    <string name="dummy_back">Back</string>
 
 </resources>
