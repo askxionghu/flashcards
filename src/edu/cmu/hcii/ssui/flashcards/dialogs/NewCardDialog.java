@@ -11,7 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 import edu.cmu.hcii.ssui.flashcards.Card.CardMutator;
-import edu.cmu.hcii.ssui.flashcards.MainActivity;
+import edu.cmu.hcii.ssui.flashcards.util.ArgUtil;
 import edu.cmu.hcii.ssui.flashcards.R;
 
 public class NewCardDialog extends DialogFragment {
@@ -21,7 +21,7 @@ public class NewCardDialog extends DialogFragment {
     public static NewCardDialog newInstance(long deckId) {
         NewCardDialog dialog = new NewCardDialog();
         Bundle args = new Bundle();
-        args.putLong(MainActivity.ARG_DECK_ID, deckId);
+        args.putLong(ArgUtil.ARG_DECK_ID, deckId);
         dialog.setArguments(args);
         return dialog;
     }
@@ -40,7 +40,7 @@ public class NewCardDialog extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         final Context ctx = getActivity();
-        final long deckId = getArguments().getLong(MainActivity.ARG_DECK_ID);
+        final long deckId = getArguments().getLong(ArgUtil.ARG_DECK_ID);
         final LayoutInflater inflater = LayoutInflater.from(ctx);
         final View view = inflater.inflate(R.layout.dialog_new_card, null);
         final EditText front = (EditText) view.findViewById(R.id.card_front);

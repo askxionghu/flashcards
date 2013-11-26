@@ -1,7 +1,5 @@
 package edu.cmu.hcii.ssui.flashcards;
 
-import android.annotation.TargetApi;
-import android.app.ActionBar;
 import android.app.DialogFragment;
 import android.app.ListActivity;
 import android.app.LoaderManager;
@@ -9,7 +7,6 @@ import android.content.ContentValues;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.ActionMode;
 import android.view.Menu;
@@ -17,10 +14,10 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
-import android.widget.AdapterView.OnItemLongClickListener;
 
 import com.commonsware.cwac.loaderex.SQLiteCursorLoader;
 
@@ -32,6 +29,7 @@ import edu.cmu.hcii.ssui.flashcards.db.CardDbHelper;
 import edu.cmu.hcii.ssui.flashcards.dialogs.DeleteDeckDialog;
 import edu.cmu.hcii.ssui.flashcards.dialogs.EditDeckDialog;
 import edu.cmu.hcii.ssui.flashcards.dialogs.NewDeckDialog;
+import edu.cmu.hcii.ssui.flashcards.util.ArgUtil;
 
 public class StudyListActivity extends ListActivity implements
         LoaderManager.LoaderCallbacks<Cursor>, DeckMutator, ActionMode.Callback {
@@ -89,9 +87,9 @@ public class StudyListActivity extends ListActivity implements
                 .toString();
 
         Intent intent = new Intent(this, StudyActivity.class);
-        intent.putExtra(MainActivity.ARG_DECK_ID, id);
-        intent.putExtra(MainActivity.ARG_DECK_NAME, name);
-        intent.putExtra(MainActivity.ARG_DECK_DESCRIPTION, description);
+        intent.putExtra(ArgUtil.ARG_DECK_ID, id);
+        intent.putExtra(ArgUtil.ARG_DECK_NAME, name);
+        intent.putExtra(ArgUtil.ARG_DECK_DESCRIPTION, description);
         startActivity(intent);
     }
 

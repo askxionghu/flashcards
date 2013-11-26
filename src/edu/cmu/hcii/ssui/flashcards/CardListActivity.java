@@ -5,7 +5,6 @@ import android.app.DialogFragment;
 import android.app.ListActivity;
 import android.app.LoaderManager;
 import android.content.ContentValues;
-import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
 import android.os.Build;
@@ -17,7 +16,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemLongClickListener;
-import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 
@@ -30,8 +28,8 @@ import edu.cmu.hcii.ssui.flashcards.db.CardContract.Tables;
 import edu.cmu.hcii.ssui.flashcards.db.CardDbHelper;
 import edu.cmu.hcii.ssui.flashcards.dialogs.DeleteCardDialog;
 import edu.cmu.hcii.ssui.flashcards.dialogs.EditCardDialog;
-import edu.cmu.hcii.ssui.flashcards.dialogs.EditDeckDialog;
 import edu.cmu.hcii.ssui.flashcards.dialogs.NewCardDialog;
+import edu.cmu.hcii.ssui.flashcards.util.ArgUtil;
 
 public class CardListActivity extends ListActivity implements
         LoaderManager.LoaderCallbacks<Cursor>, CardMutator, ActionMode.Callback {
@@ -60,8 +58,8 @@ public class CardListActivity extends ListActivity implements
         Bundle bundle = getIntent().getExtras();
 
         // Sets the ActionBar title to be that of the Bundle
-        CharSequence title = bundle.getCharSequence(MainActivity.ARG_DECK_NAME);
-        CharSequence subtitle = bundle.getCharSequence(MainActivity.ARG_DECK_DESCRIPTION);
+        CharSequence title = bundle.getCharSequence(ArgUtil.ARG_DECK_NAME);
+        CharSequence subtitle = bundle.getCharSequence(ArgUtil.ARG_DECK_DESCRIPTION);
         setActionBarTitle(title, subtitle);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
@@ -85,7 +83,7 @@ public class CardListActivity extends ListActivity implements
 
         mActionModeCallback = this;
 
-        mDeckId = bundle.getLong(MainActivity.ARG_DECK_ID);
+        mDeckId = bundle.getLong(ArgUtil.ARG_DECK_ID);
 
         String[] dataColumns = { CardTable.FRONT, CardTable.BACK };
         int[] viewIds = { R.id.label_card_front, R.id.label_card_back };

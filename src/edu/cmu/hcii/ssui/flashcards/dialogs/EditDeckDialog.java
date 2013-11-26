@@ -11,7 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 import edu.cmu.hcii.ssui.flashcards.Deck.DeckMutator;
-import edu.cmu.hcii.ssui.flashcards.MainActivity;
+import edu.cmu.hcii.ssui.flashcards.util.ArgUtil;
 import edu.cmu.hcii.ssui.flashcards.R;
 
 public class EditDeckDialog extends DialogFragment {
@@ -21,9 +21,9 @@ public class EditDeckDialog extends DialogFragment {
     public static EditDeckDialog newInstance(long deckId, String deckName, String deckDescription) {
         EditDeckDialog dialog = new EditDeckDialog();
         Bundle args = new Bundle();
-        args.putLong(MainActivity.ARG_DECK_ID, deckId);
-        args.putString(MainActivity.ARG_DECK_NAME, deckName);
-        args.putString(MainActivity.ARG_DECK_DESCRIPTION, deckDescription);
+        args.putLong(ArgUtil.ARG_DECK_ID, deckId);
+        args.putString(ArgUtil.ARG_DECK_NAME, deckName);
+        args.putString(ArgUtil.ARG_DECK_DESCRIPTION, deckDescription);
         dialog.setArguments(args);
         return dialog;
     }
@@ -43,9 +43,9 @@ public class EditDeckDialog extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         final Context ctx = getActivity();
 
-        final long deckId = getArguments().getLong(MainActivity.ARG_DECK_ID);
-        final String oldName = getArguments().getString(MainActivity.ARG_DECK_NAME);
-        final String oldDescription = getArguments().getString(MainActivity.ARG_DECK_DESCRIPTION);
+        final long deckId = getArguments().getLong(ArgUtil.ARG_DECK_ID);
+        final String oldName = getArguments().getString(ArgUtil.ARG_DECK_NAME);
+        final String oldDescription = getArguments().getString(ArgUtil.ARG_DECK_DESCRIPTION);
 
         final LayoutInflater inflater = LayoutInflater.from(ctx);
         final View view = inflater.inflate(R.layout.dialog_new_deck, null);

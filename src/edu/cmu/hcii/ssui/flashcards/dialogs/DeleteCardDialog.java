@@ -8,7 +8,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import edu.cmu.hcii.ssui.flashcards.Card.CardMutator;
-import edu.cmu.hcii.ssui.flashcards.MainActivity;
+import edu.cmu.hcii.ssui.flashcards.util.ArgUtil;
 import edu.cmu.hcii.ssui.flashcards.R;
 
 public class DeleteCardDialog extends DialogFragment {
@@ -18,7 +18,7 @@ public class DeleteCardDialog extends DialogFragment {
     public static DeleteCardDialog newInstance(long cardId) {
         DeleteCardDialog dialog = new DeleteCardDialog();
         Bundle args = new Bundle();
-        args.putLong(MainActivity.ARG_CARD_ID, cardId);
+        args.putLong(ArgUtil.ARG_CARD_ID, cardId);
         dialog.setArguments(args);
         return dialog;
     }
@@ -37,7 +37,7 @@ public class DeleteCardDialog extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         final Context ctx = getActivity();
-        final long cardId = getArguments().getLong(MainActivity.ARG_CARD_ID);
+        final long cardId = getArguments().getLong(ArgUtil.ARG_CARD_ID);
 
         return new AlertDialog.Builder(ctx)
                 .setTitle(R.string.delete_card_title)

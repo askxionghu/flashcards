@@ -8,7 +8,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import edu.cmu.hcii.ssui.flashcards.Deck.DeckMutator;
-import edu.cmu.hcii.ssui.flashcards.MainActivity;
+import edu.cmu.hcii.ssui.flashcards.util.ArgUtil;
 import edu.cmu.hcii.ssui.flashcards.R;
 
 public class DeleteDeckDialog extends DialogFragment {
@@ -18,7 +18,7 @@ public class DeleteDeckDialog extends DialogFragment {
     public static DeleteDeckDialog newInstance(long deckId) {
         DeleteDeckDialog dialog = new DeleteDeckDialog();
         Bundle args = new Bundle();
-        args.putLong(MainActivity.ARG_DECK_ID, deckId);
+        args.putLong(ArgUtil.ARG_DECK_ID, deckId);
         dialog.setArguments(args);
         return dialog;
     }
@@ -37,7 +37,7 @@ public class DeleteDeckDialog extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         final Context ctx = getActivity();
-        final long deckId = getArguments().getLong(MainActivity.ARG_DECK_ID);
+        final long deckId = getArguments().getLong(ArgUtil.ARG_DECK_ID);
 
         return new AlertDialog.Builder(ctx)
                 .setTitle(R.string.delete_deck_title)

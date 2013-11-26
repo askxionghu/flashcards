@@ -17,8 +17,6 @@ public class NewDeckDialog extends DialogFragment {
 
     private DeckMutator mDeckMutator;
 
-    private EditText mDeckName;
-
     public static NewDeckDialog newInstance() {
         NewDeckDialog dialog = new NewDeckDialog();
 

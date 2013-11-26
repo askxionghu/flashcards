@@ -9,9 +9,7 @@ import android.animation.AnimatorInflater;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.app.ActionBar;
-import android.app.DialogFragment;
 import android.app.LoaderManager;
-import android.content.ContentValues;
 import android.content.Intent;
 import android.content.Loader;
 import android.content.res.Resources;
@@ -30,13 +28,9 @@ import android.widget.TextView;
 
 import com.commonsware.cwac.loaderex.SQLiteCursorLoader;
 
-import edu.cmu.hcii.ssui.flashcards.Card.CardMutator;
-import edu.cmu.hcii.ssui.flashcards.db.CardContract.CardTable;
 import edu.cmu.hcii.ssui.flashcards.db.CardContract.Queries;
-import edu.cmu.hcii.ssui.flashcards.db.CardContract.Tables;
 import edu.cmu.hcii.ssui.flashcards.db.CardDbHelper;
-import edu.cmu.hcii.ssui.flashcards.dialogs.EditCardDialog;
-import edu.cmu.hcii.ssui.flashcards.dialogs.EditDeckDialog;
+import edu.cmu.hcii.ssui.flashcards.util.ArgUtil;
 
 public class StudyActivity extends FragmentActivity implements
         LoaderManager.LoaderCallbacks<Cursor> {
@@ -46,26 +40,25 @@ public class StudyActivity extends FragmentActivity implements
 
     private static final String ARG_SAVE_FLIPPED = "flipped";
 
-    private static final String ARG_PAGER_PARCEL = "pager_parcel";
-
     private LoaderManager.LoaderCallbacks<Cursor> mCallbacks;
     private SQLiteCursorLoader mLoader;
 
     /**
-     * The {@link Card}s contained in this {@link Deck}.
+     * The {@link Card}s contained in this {@link Deck}. Populated by the Loader
+     * when necessary.
      */
     private final List<Card> mCards = new ArrayList<Card>();
 
-    private int mPosition;
-
     /**
-     * The {@link Deck} we're examining at the moment.
+     * The ID number of the {@link Deck} we're examining at the moment.
      */
     private long mDeckId;
 
     private String mDeckName;
 
     private String mDeckDescription;
+
+    /* --- GUI Elements --- */
 
     private boolean mShowingBack;
 
@@ -77,6 +70,9 @@ public class StudyActivity extends FragmentActivity implements
 
     private TextView mEncouragement;
 
+    /**
+     * The <code>String</code> array of encouragement.
+     */
     private String[] mEncouragementArray;
 
     /**
@@ -95,9 +91,9 @@ public class StudyActivity extends FragmentActivity implements
         setContentView(R.layout.activity_study);
 
         Bundle bundle = getIntent().getExtras();
-        mDeckId = bundle.getLong(MainActivity.ARG_DECK_ID);
-        mDeckName = bundle.getString(MainActivity.ARG_DECK_NAME);
-        mDeckDescription = bundle.getString(MainActivity.ARG_DECK_DESCRIPTION);
+        mDeckId = bundle.getLong(ArgUtil.ARG_DECK_ID);
+        mDeckName = bundle.getString(ArgUtil.ARG_DECK_NAME);
+        mDeckDescription = bundle.getString(ArgUtil.ARG_DECK_DESCRIPTION);
 
         mCallbacks = this;
 
@@ -136,9 +132,9 @@ public class StudyActivity extends FragmentActivity implements
             return true;
         case R.id.action_cardlist:
             Intent intent = new Intent(this, CardListActivity.class);
-            intent.putExtra(MainActivity.ARG_DECK_ID, mDeckId);
-            intent.putExtra(MainActivity.ARG_DECK_NAME, mDeckName);
-            intent.putExtra(MainActivity.ARG_DECK_DESCRIPTION, mDeckDescription);
+            intent.putExtra(ArgUtil.ARG_DECK_ID, mDeckId);
+            intent.putExtra(ArgUtil.ARG_DECK_NAME, mDeckName);
+            intent.putExtra(ArgUtil.ARG_DECK_DESCRIPTION, mDeckDescription);
             startActivity(intent);
             return true;
         default:
@@ -313,7 +309,6 @@ public class StudyActivity extends FragmentActivity implements
 
         @Override
         public void setPrimaryItem(ViewGroup container, int position, Object object) {
-            mPosition = position;
             if (mCards.size() == 0 && position == 0) {
                 View v = View.inflate(getApplicationContext(), R.layout.study_page_empty, null);
                 ((ViewGroup) container.getParent()).addView(v, 0);

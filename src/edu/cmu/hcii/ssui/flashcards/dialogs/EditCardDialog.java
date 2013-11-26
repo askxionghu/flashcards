@@ -11,7 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 import edu.cmu.hcii.ssui.flashcards.Card.CardMutator;
-import edu.cmu.hcii.ssui.flashcards.MainActivity;
+import edu.cmu.hcii.ssui.flashcards.util.ArgUtil;
 import edu.cmu.hcii.ssui.flashcards.R;
 
 public class EditCardDialog extends DialogFragment {
@@ -21,9 +21,9 @@ public class EditCardDialog extends DialogFragment {
     public static EditCardDialog newInstance(long cardId, String cardFront, String cardBack) {
         EditCardDialog dialog = new EditCardDialog();
         Bundle args = new Bundle();
-        args.putLong(MainActivity.ARG_CARD_ID, cardId);
-        args.putString(MainActivity.ARG_CARD_FRONT, cardFront);
-        args.putString(MainActivity.ARG_CARD_BACK, cardBack);
+        args.putLong(ArgUtil.ARG_CARD_ID, cardId);
+        args.putString(ArgUtil.ARG_CARD_FRONT, cardFront);
+        args.putString(ArgUtil.ARG_CARD_BACK, cardBack);
         dialog.setArguments(args);
         return dialog;
     }
@@ -43,9 +43,9 @@ public class EditCardDialog extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         final Context ctx = getActivity();
 
-        final long cardId = getArguments().getLong(MainActivity.ARG_CARD_ID);
-        final String oldFront = getArguments().getString(MainActivity.ARG_CARD_FRONT);
-        final String oldBack = getArguments().getString(MainActivity.ARG_CARD_BACK);
+        final long cardId = getArguments().getLong(ArgUtil.ARG_CARD_ID);
+        final String oldFront = getArguments().getString(ArgUtil.ARG_CARD_FRONT);
+        final String oldBack = getArguments().getString(ArgUtil.ARG_CARD_BACK);
 
         final LayoutInflater inflater = LayoutInflater.from(ctx);
         final View view = inflater.inflate(R.layout.dialog_new_card, null);
