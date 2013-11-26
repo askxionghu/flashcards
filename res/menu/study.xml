@@ -2,13 +2,13 @@
     xmlns:flashcards="http://schemas.android.com/apk/res-auto" >
 
     <item
-        android:id="@+id/action_next"
+        android:id="@+id/action_shuffle"
+        android:icon="@drawable/ic_action_shuffle"
         android:showAsAction="ifRoom"
-        android:title="@string/action_next"/>
+        android:title="@string/action_shuffle"/>
     <item
-        android:id="@+id/action_settings"
-        android:orderInCategory="100"
-        android:showAsAction="never"
-        android:title="@string/action_settings"/>
+        android:id="@+id/action_cardlist"
+        android:showAsAction="ifRoom"
+        android:title="@string/action_cardlist"/>
 
 </menu>

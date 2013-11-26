@@ -100,18 +100,6 @@ public class CardListActivity extends ListActivity implements
         lm.initLoader(DECK_LOADER_ID, bundle, mCallbacks);
     }
 
-    @Override
-    public void onListItemClick(ListView l, View view, int position, long id) {
-        super.onListItemClick(l, view, position, id);
-        mSelectedId = id;
-        mSelectedFront = ((TextView) view.findViewById(R.id.label_card_front)).getText()
-                .toString();
-        mSelectedBack = ((TextView) view.findViewById(R.id.label_card_back)).getText()
-                .toString();
-        DialogFragment dialog = EditCardDialog.newInstance(mSelectedId, mSelectedFront, mSelectedBack);
-        dialog.show(getFragmentManager(), EditDeckDialog.class.getSimpleName());
-    }
-
     private void setActionBarTitle(CharSequence title, CharSequence subtitle) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             ActionBar bar = getActionBar();
@@ -137,9 +125,6 @@ public class CardListActivity extends ListActivity implements
         case R.id.action_new_card:
             DialogFragment dialog = NewCardDialog.newInstance(mDeckId);
             dialog.show(getFragmentManager(), NewCardDialog.class.getSimpleName());
-            return true;
-        case R.id.action_settings:
-            // TODO: 'Settings' menu button.
             return true;
         default:
             return super.onOptionsItemSelected(item);
@@ -236,7 +221,7 @@ public class CardListActivity extends ListActivity implements
         switch (item.getItemId()) {
         case R.id.action_edit:
             dialog = EditCardDialog.newInstance(mSelectedId, mSelectedFront, mSelectedBack);
-            dialog.show(getFragmentManager(), EditDeckDialog.class.getSimpleName());
+            dialog.show(getFragmentManager(), EditCardDialog.class.getSimpleName());
             mode.finish();
             return true;
         case R.id.action_delete:

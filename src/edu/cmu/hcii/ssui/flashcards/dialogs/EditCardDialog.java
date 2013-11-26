@@ -35,7 +35,7 @@ public class EditCardDialog extends DialogFragment {
         try {
             mCardMutator = (CardMutator) activity;
         } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString() + " must implement DeckMutator");
+            throw new ClassCastException(activity.toString() + " must implement CardMutator");
         }
     }
 

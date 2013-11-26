@@ -1,36 +1,52 @@
 package edu.cmu.hcii.ssui.flashcards;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Random;
+
 import android.animation.AnimatorInflater;
 import android.animation.AnimatorSet;
-import android.annotation.TargetApi;
+import android.animation.ObjectAnimator;
+import android.app.ActionBar;
+import android.app.DialogFragment;
 import android.app.LoaderManager;
+import android.content.ContentValues;
+import android.content.Intent;
 import android.content.Loader;
-import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.TextView;
+
 import com.commonsware.cwac.loaderex.SQLiteCursorLoader;
+
+import edu.cmu.hcii.ssui.flashcards.Card.CardMutator;
+import edu.cmu.hcii.ssui.flashcards.db.CardContract.CardTable;
 import edu.cmu.hcii.ssui.flashcards.db.CardContract.Queries;
+import edu.cmu.hcii.ssui.flashcards.db.CardContract.Tables;
 import edu.cmu.hcii.ssui.flashcards.db.CardDbHelper;
+import edu.cmu.hcii.ssui.flashcards.dialogs.EditCardDialog;
+import edu.cmu.hcii.ssui.flashcards.dialogs.EditDeckDialog;
 
 public class StudyActivity extends FragmentActivity implements
         LoaderManager.LoaderCallbacks<Cursor> {
     private static final String TAG = StudyActivity.class.getSimpleName();
 
     private static final int LOADER_ID = 1;
+
+    private static final String ARG_SAVE_FLIPPED = "flipped";
+
+    private static final String ARG_PAGER_PARCEL = "pager_parcel";
 
     private LoaderManager.LoaderCallbacks<Cursor> mCallbacks;
     private SQLiteCursorLoader mLoader;
@@ -40,10 +56,16 @@ public class StudyActivity extends FragmentActivity implements
      */
     private final List<Card> mCards = new ArrayList<Card>();
 
+    private int mPosition;
+
     /**
      * The {@link Deck} we're examining at the moment.
      */
     private long mDeckId;
+
+    private String mDeckName;
+
+    private String mDeckDescription;
 
     private boolean mShowingBack;
 
@@ -53,9 +75,9 @@ public class StudyActivity extends FragmentActivity implements
 
     private TextView mMemorized;
 
-    private Button mYesButton;
+    private TextView mEncouragement;
 
-    private Button mNoButton;
+    private String[] mEncouragementArray;
 
     /**
      * The pager widget which handles the animation to the next {@link Card}.
@@ -74,6 +96,8 @@ public class StudyActivity extends FragmentActivity implements
 
         Bundle bundle = getIntent().getExtras();
         mDeckId = bundle.getLong(MainActivity.ARG_DECK_ID);
+        mDeckName = bundle.getString(MainActivity.ARG_DECK_NAME);
+        mDeckDescription = bundle.getString(MainActivity.ARG_DECK_DESCRIPTION);
 
         mCallbacks = this;
 
@@ -85,14 +109,17 @@ public class StudyActivity extends FragmentActivity implements
         mPagerAdapter = new StudyPagerAdapter();
         mPager.setAdapter(mPagerAdapter);
 
-        // Hides the Action Bar when device is in landscape.
-        Configuration config = getResources().getConfiguration();
-        if (config.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            getActionBar().hide();
-        } else {
-            getActionBar().show();
+        if (savedInstanceState != null) {
+            mShowingBack = savedInstanceState.getBoolean(ARG_SAVE_FLIPPED);
         }
+
+        setActionBarTitle(mDeckName, mDeckDescription);
+
+        Resources res = getResources();
+        mEncouragementArray = res.getStringArray(R.array.encouragement_strings);
     }
+
+    /* --- ACTION BAR --- */
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -104,11 +131,34 @@ public class StudyActivity extends FragmentActivity implements
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle presses on the action bar items
         switch (item.getItemId()) {
-        case R.id.action_next:
-            // TODO: End study session.
+        case R.id.action_shuffle:
+            shuffle();
+            return true;
+        case R.id.action_cardlist:
+            Intent intent = new Intent(this, CardListActivity.class);
+            intent.putExtra(MainActivity.ARG_DECK_ID, mDeckId);
+            intent.putExtra(MainActivity.ARG_DECK_NAME, mDeckName);
+            intent.putExtra(MainActivity.ARG_DECK_DESCRIPTION, mDeckDescription);
+            startActivity(intent);
             return true;
         default:
             return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean(ARG_SAVE_FLIPPED, mShowingBack);
+    }
+
+    private void setActionBarTitle(CharSequence title, CharSequence subtitle) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            ActionBar bar = getActionBar();
+            bar.setTitle(title);
+            if (subtitle.length() > 0) {
+                bar.setSubtitle(subtitle);
+            }
         }
     }
 
@@ -157,6 +207,19 @@ public class StudyActivity extends FragmentActivity implements
         return new Card(id, deckId, front, back);
     }
 
+    private void shuffle() {
+        if (mPagerAdapter.getCount() > 0) {
+            Collections.shuffle(mCards);
+            mPagerAdapter.notifyDataSetChanged();
+            Random random = new Random();
+            int next = random.nextInt(mPagerAdapter.getCount());
+            while (next == random.nextInt(mPagerAdapter.getCount())) {
+                next = random.nextInt(mPagerAdapter.getCount());
+            }
+            mPager.setCurrentItem(next);
+        }
+    }
+
     private void flipCard() {
         if (!mShowingBack) {
             // Loads the animation for flipping the cards.
@@ -203,46 +266,20 @@ public class StudyActivity extends FragmentActivity implements
     private class StudyPagerAdapter extends PagerAdapter {
 
         private final View.OnClickListener mFlipListener = new View.OnClickListener() {
-            @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR1)
             @Override
             public void onClick(View v) {
                 flipCard();
 
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR1) {
-                    mYesButton.animate().alpha(1.0f);
-                    mNoButton.animate().alpha(1.0f);
-                    mMemorized.animate().alpha(1.0f);
-                }
+                ObjectAnimator fadeIn = ObjectAnimator.ofFloat(mEncouragement, "alpha", 1.0f);
+                fadeIn.start();
             }
         };
 
         @Override
         public Object instantiateItem(ViewGroup container, int position) {
             View v = View.inflate(getApplicationContext(), R.layout.study_page, null);
-            // Introduction Page
-            if (position == 0) {
-                mCardFront = (FrameLayout) v.findViewById(R.id.card_front);
-                TextView frontText = (TextView) v.findViewById(R.id.card_front_text);
-                frontText.setText(getString(R.string.instruction_card));
-                mCardFront.setOnClickListener(mFlipListener);
-
-                mCardBack = (FrameLayout) v.findViewById(R.id.card_back);
-                TextView backText = (TextView) v.findViewById(R.id.card_back_text);
-                backText.setText(getString(R.string.instruction_card_back));
-                mCardBack.setOnClickListener(mFlipListener);
-                mCardBack.setClickable(false);
-
-                if (mCardFront.getAlpha() == 0.0) {
-                    mShowingBack = true;
-                } else {
-                    mShowingBack = false;
-                }
-
-                container.addView(v, 0);
-                return v;
-            }
-            if (position < mCards.size() + 1) {
-                Card card = mCards.get(position - 1);
+            if (position < mCards.size()) {
+                Card card = mCards.get(position);
 
                 mCardFront = (FrameLayout) v.findViewById(R.id.card_front);
                 TextView frontText = (TextView) v.findViewById(R.id.card_front_text);
@@ -254,6 +291,15 @@ public class StudyActivity extends FragmentActivity implements
                 backText.setText(card.getBack());
                 mCardBack.setOnClickListener(mFlipListener);
                 mCardBack.setClickable(false);
+
+                String progress = "Card " + (position + 1) + " of " + getCount();
+                mMemorized = (TextView) v.findViewById(R.id.memorized);
+                mMemorized.setText(progress);
+
+                Random random = new Random();
+                String yay = mEncouragementArray[random.nextInt(mEncouragementArray.length)];
+                mEncouragement = (TextView) v.findViewById(R.id.encouragement);
+                mEncouragement.setText(yay);
 
                 if (mCardFront.getAlpha() == 0.0) {
                     mShowingBack = true;
@@ -267,17 +313,23 @@ public class StudyActivity extends FragmentActivity implements
 
         @Override
         public void setPrimaryItem(ViewGroup container, int position, Object object) {
-            if (position == 0) {
-                super.setPrimaryItem(container, position, object);;
+            mPosition = position;
+            if (mCards.size() == 0 && position == 0) {
+                View v = View.inflate(getApplicationContext(), R.layout.study_page_empty, null);
+                ((ViewGroup) container.getParent()).addView(v, 0);
             }
             View v = (View) object;
-            if (position < mCards.size() + 1) {
+            if (position < mCards.size()) {
+                View empty = findViewById(R.id.study_page_empty);
+                if (empty != null) {
+                    ((ViewGroup) empty.getParent()).removeView(empty);
+                    ;
+                }
                 mCardFront = (FrameLayout) v.findViewById(R.id.card_front);
                 mCardBack = (FrameLayout) v.findViewById(R.id.card_back);
 
                 mMemorized = (TextView) v.findViewById(R.id.memorized);
-                mYesButton = (Button) v.findViewById(R.id.yes_button);
-                mNoButton = (Button) v.findViewById(R.id.no_button);
+                mEncouragement = (TextView) v.findViewById(R.id.encouragement);
 
                 if (mCardFront.getAlpha() == 0.0) {
                     mShowingBack = true;
@@ -294,7 +346,7 @@ public class StudyActivity extends FragmentActivity implements
 
         @Override
         public int getCount() {
-            return mCards.size() + 1;
+            return mCards.size();
         }
 
         @Override

@@ -14,36 +14,24 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name="edu.cmu.hcii.ssui.flashcards.MainActivity"
+            android:name="edu.cmu.hcii.ssui.flashcards.CardListActivity"
+            android:parentActivityName="edu.cmu.hcii.ssui.flashcards.StudyListActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="edu.cmu.hcii.ssui.flashcards.StudyListActivity" />
+        </activity>
+        <activity
+            android:name="edu.cmu.hcii.ssui.flashcards.StudyListActivity"
             android:label="@string/app_name" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="edu.cmu.hcii.ssui.flashcards.MainActivity" />
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
-        <activity
-            android:name="edu.cmu.hcii.ssui.flashcards.DeckListActivity"
-            android:label="@string/manage_cards_title"
-            android:parentActivityName="edu.cmu.hcii.ssui.flashcards.MainActivity" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="edu.cmu.hcii.ssui.flashcards.MainActivity" />
-        </activity>
-        <activity
-            android:name="edu.cmu.hcii.ssui.flashcards.CardListActivity"
-            android:parentActivityName="edu.cmu.hcii.ssui.flashcards.DeckListActivity" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="edu.cmu.hcii.ssui.flashcards.DeckListActivity" />
-        </activity>
-        <activity
-            android:name="edu.cmu.hcii.ssui.flashcards.StudyListActivity"
-            android:label="@string/study_session_title"
-            android:parentActivityName="edu.cmu.hcii.ssui.flashcards.MainActivity" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="edu.cmu.hcii.ssui.flashcards.MainActivity" />
         </activity>
         <activity
             android:name="edu.cmu.hcii.ssui.flashcards.StudyActivity"

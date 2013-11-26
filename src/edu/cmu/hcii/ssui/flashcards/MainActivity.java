@@ -56,9 +56,6 @@ public class MainActivity extends Activity implements OnClickListener {
                 DialogFragment dialog = NewDeckDialog.newInstance();
                 dialog.show(getFragmentManager(), NewDeckDialog.class.getSimpleName());
                 return true;
-            case R.id.action_settings:
-                // TODO: 'Settings' menu button.
-                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }

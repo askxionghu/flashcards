@@ -3,13 +3,8 @@
 
     <item
         android:id="@+id/action_new_deck"
-        android:icon="@drawable/ic_menu_add"
+        android:icon="@drawable/ic_action_new"
         android:showAsAction="ifRoom"
         android:title="@string/action_new_deck"/>
-    <item
-        android:id="@+id/action_settings"
-        android:orderInCategory="100"
-        android:showAsAction="never"
-        android:title="@string/action_settings"/>
 
 </menu>
